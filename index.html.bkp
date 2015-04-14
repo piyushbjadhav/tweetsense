@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+  <head>
+    <title>TweetSense</title>
+    <style>
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      #map-canvas { height: 100% }
+      h1 { position:absolute; }
+    </style>
+
+    <script type="text/javascript">
+        function getTweetLocations() {
+
+
+          //heatmap.add({})
+          socket.emit('hello','message');
+        }
+
+        function stop() {
+          socket.emit('stop','message');
+        }
+    </script> 
+
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+
+  </head>
+  <body>
+    <div>
+    <button onclick="getTweetLocations()">start</button>
+    <button onclick="stop()">stop</button>
+    <p id='print'></p>
+    </div>
+
+    <div id="map-canvas"></div>
+    
+      <script src="/heatmap.min.js"></script>
+      <script src="/gmaps-heatmap.js"></script>
+
+    <script>
+
+        // map center
+        var myLatlng = new google.maps.LatLng(0, 0);
+        // map options,
+        var myOptions = {
+          zoom: 3,
+          center: myLatlng
+        };
+        // standard map
+        map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
+        
+            // set markers
+        var point = new google.maps.LatLng(40, -20);
+        var marker = new google.maps.Marker({
+           position: point,
+           title:"Hello World!"
+        });
+
+    // To add the marker to the map, call setMap();
+        marker.setMap(map);
+
+
+
+     </script>   
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+      var socket = io(); 
+      socket.on('response', function(msg){
+      // document.getElementById('print').innerHTML += '<br>' + msg;
+       heatmap.addData(JSON.parse(msg));    
+      });
+
+    </script>
+
+
+  </body>
+</html>
+
+
+       

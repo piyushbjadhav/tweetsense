@@ -10,6 +10,7 @@
     </style>
 
     <script type="text/javascript">
+        tweetcount = 0.0;
         function getTweetLocations() {
 
 
@@ -29,7 +30,7 @@
     <div>
     <button onclick="getTweetLocations()">start</button>
     <button onclick="stop()">stop</button>
-    <p id='print'></p>
+      <label id='sentiment'>0.0</label>
     </div>
 
     <div id="map-canvas"></div>
@@ -40,41 +41,26 @@
     <script>
 
         // map center
-        var myLatlng = new google.maps.LatLng(-73.5, 40.5);
+        var myLatlng = new google.maps.LatLng(0, 0);
         // map options,
         var myOptions = {
-          zoom: 7,
+          zoom: 3,
           center: myLatlng
         };
         // standard map
         map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
-        // heatmap layer
-        heatmap = new HeatmapOverlay(map, 
-          {
-            // radius should be small ONLY if scaleRadius is true (or small radius is intended)
-            "radius": 2,
-            "maxOpacity": 1, 
-            // scales the radius based on map zoom
-            "scaleRadius": true, 
-            // if set to false the heatmap uses the global maximum for colorization
-            // if activated: uses the data maximum within the current map boundaries 
-            //   (there will always be a red spot with useLocalExtremas true)
-            "useLocalExtrema": true,
-            // which field name in your data represents the latitude - default "lat"
-            latField: 'lat',
-            // which field name in your data represents the longitude - default "lng"
-            lngField: 'lng',
-            // which field name in your data represents the data value - default "value"
-            valueField: 'value'
-          }
-        );
+        
+            // set markers
+        var point = new google.maps.LatLng(40, -20);
+        var marker = new google.maps.Marker({
+           position: point,
+           title:"Hello World!"
+        });
 
-        var testData = {
-          max: 8,
-          data: [{lat: 24.6408, lng:46.7728, value: 3},{lat: 50.75, lng:-1.55, value: 1}]
-        };
+    // To add the marker to the map, call setMap();
+        marker.setMap(map);
 
-        heatmap.setData(testData);
+
 
      </script>   
 
@@ -82,8 +68,37 @@
     <script type="text/javascript">
       var socket = io(); 
       socket.on('response', function(msg){
-      // document.getElementById('print').innerHTML += '<br>' + msg;
-       heatmap.addData(JSON.parse(msg));    
+      
+       //console.log('message recieved');
+       var geo = JSON.parse(msg);
+       var point = new google.maps.LatLng(geo['lat'], geo['lng']);
+       var color;
+       console.log(geo['score']);
+       if (geo['score'] < 0)
+            color = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+        else
+            color = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+
+        var marker = new google.maps.Marker({
+           icon : color,
+           position: point,
+           title:geo['text']
+        });
+
+    // To add the marker to the map, call setMap();
+        marker.setMap(map);   
+
+        var cursentiment = parseFloat(document.getElementById('sentiment').innerHTML);
+        var newsentiment = 0.0;
+        //console.log(tweetcount);
+        newsentiment = ((cursentiment*tweetcount) + geo['score']) ;
+        //console.log(newsentiment);
+        tweetcount ++;
+        newsentiment = parseFloat(newsentiment) / tweetcount;
+        console.log(newsentiment);
+        document.getElementById('sentiment').innerHTML = newsentiment  ;
+        
+
       });
 
     </script>
