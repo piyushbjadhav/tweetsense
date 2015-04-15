@@ -22,9 +22,7 @@
           socket.emit('stop','message');
         }
     </script> 
-
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-
   </head>
   <body>
     <div>
@@ -34,10 +32,6 @@
     </div>
 
     <div id="map-canvas"></div>
-    
-      <script src="/heatmap.min.js"></script>
-      <script src="/gmaps-heatmap.js"></script>
-
     <script>
 
         // map center
@@ -91,11 +85,13 @@
         var cursentiment = parseFloat(document.getElementById('sentiment').innerHTML);
         var newsentiment = 0.0;
         //console.log(tweetcount);
+        geo['score'] *=100;
         newsentiment = ((cursentiment*tweetcount) + geo['score']) ;
         //console.log(newsentiment);
         tweetcount ++;
-        newsentiment = parseFloat(newsentiment) / tweetcount;
-        console.log(newsentiment);
+        newsentiment /= tweetcount;
+        console.log("\nCurrent Sentiment" + cursentiment + "\nCurrent Score" + geo['score'] + "\nTweetCount" + tweetcount + " \nNew Sentiment" + newsentiment);
+       
         document.getElementById('sentiment').innerHTML = newsentiment  ;
         
 
