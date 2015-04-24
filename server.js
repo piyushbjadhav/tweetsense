@@ -1,4 +1,5 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var Consumer = require('sqs-consumer');
@@ -45,20 +46,7 @@ consumer.on('message', function(message){
 
 });
 
-
-
-
-app.get('/', function(req, res){
-  res.sendfile('index.html');
-});
-
-app.get('/heatmap.min.js', function(req, res){
-  res.sendfile('heatmap.min.js');
-});
-
-app.get('/gmaps-heatmap.js', function(req, res){
-  res.sendfile('gmaps-heatmap.js');
-});
+app.use(express.static('.'));
 
 
 io.on('connection', function(socket){
@@ -74,6 +62,6 @@ io.on('connection', function(socket){
     });
 });
 
-http.listen(process.env.PORT || 3002, function(){
+http.listen(process.env.PORT || 3000, function(){
   console.log('listening on *:3000');
 });
